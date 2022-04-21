@@ -1,31 +1,41 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+# This workflow will build and deploy Lambda
 
-name: Node.js CI
+name: Building and Deploying Lambda Function
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
+  # pull_request:
+  #   branches: [ main ]
+  workflow_dispatch:
+    
 jobs:
   build:
-
+    name: Build_Lambda
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
+        node-version: [12.x]
+       
     steps:
     - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+    - name: Creating a zip file for lambda
+      run: |
+           pwd
+           ls -al
+           zip -r index.zip ./
+           echo "after zipping index folder"
+           ls -al
+    - name: Configuring AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
       with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEMO }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEMO }}
+        aws-region: us-east-1
+    - name: Copying artifact to S3
+      run: |
+           aws s3 cp ./index.zip s3://deploy.serverless.as9/
+    - name: Lambda Update
+      run: |
+           aws lambda update-function-code --function-name emailVerify --s3-bucket deploy.serverless.as9 --s3-key index.zip
