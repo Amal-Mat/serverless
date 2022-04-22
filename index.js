@@ -32,7 +32,7 @@ exports.handler = async function (event) {
         }
     });
     console.log(email + " " + token + " Parameters set!!");
-
+// HTTPS Security added to the link
     const mailbody = `
     <!DOCTYPE html>
     <html>
