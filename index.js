@@ -32,7 +32,7 @@ exports.handler = async function (event) {
         }
     });
     console.log(email + " " + token + " Parameters set!!");
-
+// HTTPS Security added to the link
     const mailbody = `
     <!DOCTYPE html>
     <html>
@@ -43,7 +43,7 @@ exports.handler = async function (event) {
           <p>Please verify your email</br>
           <b>Link will be valid only for 5 minutes!!</b></br>
           Find your link below:</p>
-          <p><a href=http://dev.amalmathur.me/v1/user/verifyUserEmail?token=${token}&email=${email} >
+          <p><a href=https://dev.amalmathur.me/v1/user/verifyUserEmail?token=${token}&email=${email} >
             http://dev.amalmathur.me/v1/user/verifyUserEmail?token=${token}&email=${email} </a> </p>
             </body></html>
         </body>
